@@ -1,0 +1,35 @@
+{
+	"name": "harikrut/featured-image-with-url",
+	"description": "This plugin allows to use an external URL Images as Featured Image for your post types. Includes support for Product Gallery (WooCommerce).",
+	"type": "wordpress-plugin",
+	"keywords": [],
+	"homepage": "https://harikrut.com",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "harikrut",
+			"email": "harikruttech@gmail.com",
+			"homepage": "https://harikrut.com",
+			"role": "Developer"
+		}
+	],
+	"require-dev": {
+		"wp-coding-standards/wpcs": "^2.2",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+		"10up/phpcs-composer": "dev-master"
+	},
+	"scripts": {
+		"phpcs": "vendor/bin/phpcs featured-image-with-url.php includes/ --extensions=php -s",
+		"phpcs:compat": "vendor/bin/phpcs featured-image-with-url.php includes/ --standard=PHPCompatibilityWP --extensions=php --runtime-set testVersion 7.4-",
+		"lint-fix": "./vendor/bin/phpcbf --extensions=php ."
+	},
+	"minimum-stability": "dev",
+	"config": {
+		"platform": {
+			"php": "7.4"
+		},
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}

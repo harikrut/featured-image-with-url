@@ -20,168 +20,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Set up the plugin constants.
+ */
+// Plugin version.
+if ( ! defined( 'HARIKRUTFIWU_VERSION' ) ) {
+	define( 'HARIKRUTFIWU_VERSION', '1.0.0' );
+}
 
-if ( ! class_exists( 'Featured_Image_With_URL' ) ) :
+// Plugin folder Path.
+if ( ! defined( 'HARIKRUTFIWU_PLUGIN_DIR' ) ) {
+	define( 'HARIKRUTFIWU_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
 
-	/**
-	 * Main Featured Image with URL class
-	 */
-	class Featured_Image_With_URL {
+// Plugin folder URL.
+if ( ! defined( 'HARIKRUTFIWU_PLUGIN_URL' ) ) {
+	define( 'HARIKRUTFIWU_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
 
-		/** Singleton *************************************************************/
-		/**
-		 * Featured_Image_With_URL The one true Featured_Image_With_URL.
-		 *
-		 * @var Featured_Image_With_URL $instance
-		 */
-		private static $instance;
+// Plugin root file.
+if ( ! defined( 'HARIKRUTFIWU_PLUGIN_FILE' ) ) {
+	define( 'HARIKRUTFIWU_PLUGIN_FILE', __FILE__ );
+}
 
-		/**
-		 * Admin Instance.
-		 *
-		 * @var Featured_Image_With_URL_Admin $admin
-		 */
-		public $admin;
+// Options.
+if ( ! defined( 'HARIKRUTFIWU_OPTIONS' ) ) {
+	define( 'HARIKRUTFIWU_OPTIONS', 'harikrutfiwu_options' );
+}
 
-		/**
-		 * Common Instance.
-		 *
-		 * @var Featured_Image_With_URL_Common $common
-		 */
-		public $common;
+// Gallary meta key.
+if ( ! defined( 'HARIKRUTFIWU_WCGALLARY' ) ) {
+	define( 'HARIKRUTFIWU_WCGALLARY', '_harikrutfiwu_wcgallary' );
+}
 
-		/**
-		 * Main Featured Image with URL Instance.
-		 *
-		 * Insure that only one instance of Featured_Image_With_URL exists in memory at any one time.
-		 * Also prevents needing to define globals all over the place.
-		 *
-		 * @since 1.0.0
-		 * @static object $instance
-		 * @uses Featured_Image_With_URL::setup_constants() Setup the constants needed.
-		 * @uses Featured_Image_With_URL::includes() Include the required files.
-		 * @uses Featured_Image_With_URL::load_textdomain() load the language files.
-		 * @see run_harikrutfiwu()
-		 * @return object|Featured_Image_with_URL the one true Featured Image with URL.
-		 */
-		public static function instance() {
-			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Featured_Image_With_URL ) ) {
-				self::$instance = new Featured_Image_With_URL();
-				self::$instance->setup_constants();
-
-				add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
-
-				self::$instance->includes();
-				self::$instance->admin  = new Featured_Image_With_URL_Admin();
-				self::$instance->common = new Featured_Image_With_URL_Common();
-
-			}
-			return self::$instance;
-		}
-
-		/** Magic Methods *********************************************************/
-
-		/**
-		 * A dummy constructor to prevent Featured_Image_With_URL from being loaded more than once.
-		 *
-		 * @since 1.0.0
-		 * @see Featured_Image_With_URL::instance()
-		 * @see run_harikrutfiwu()
-		 */
-		private function __construct() {
-			/* Do nothing here */
-		}
-
-		/**
-		 * A dummy magic method to prevent Featured_Image_With_URL from being cloned.
-		 *
-		 * @since 1.0.0
-		 */
-		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.0' );
-		}
-
-		/**
-		 * A dummy magic method to prevent Featured_Image_With_URL from being unserialized.
-		 *
-		 * @since 1.0.0
-		 */
-		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.0' );
-		}
-
-
-		/**
-		 * Setup plugins constants.
-		 *
-		 * @access private
-		 * @since 1.0.0
-		 * @return void
-		 */
-		private function setup_constants() {
-
-			// Plugin version.
-			if ( ! defined( 'HARIKRUTFIWU_VERSION' ) ) {
-				define( 'HARIKRUTFIWU_VERSION', '1.0.0' );
-			}
-
-			// Plugin folder Path.
-			if ( ! defined( 'HARIKRUTFIWU_PLUGIN_DIR' ) ) {
-				define( 'HARIKRUTFIWU_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-			}
-
-			// Plugin folder URL.
-			if ( ! defined( 'HARIKRUTFIWU_PLUGIN_URL' ) ) {
-				define( 'HARIKRUTFIWU_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-			}
-
-			// Plugin root file.
-			if ( ! defined( 'HARIKRUTFIWU_PLUGIN_FILE' ) ) {
-				define( 'HARIKRUTFIWU_PLUGIN_FILE', __FILE__ );
-			}
-
-			// Options.
-			if ( ! defined( 'HARIKRUTFIWU_OPTIONS' ) ) {
-				define( 'HARIKRUTFIWU_OPTIONS', 'harikrutfiwu_options' );
-			}
-
-			// Gallary meta key.
-			if ( ! defined( 'HARIKRUTFIWU_WCGALLARY' ) ) {
-				define( 'HARIKRUTFIWU_WCGALLARY', '_harikrutfiwu_wcgallary' );
-			}
-
-		}
-
-		/**
-		 * Include required files.
-		 *
-		 * @access private
-		 * @since 1.0.0
-		 * @return void
-		 */
-		private function includes() {
-			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-featured-image-with-url-admin.php';
-			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-featured-image-with-url-common.php';
-		}
-
-		/**
-		 * Loads the plugin language files.
-		 *
-		 * @access public
-		 * @since 1.0.0
-		 * @return void
-		 */
-		public function load_textdomain() {
-
-			load_plugin_textdomain(
-				'featured-image-with-url',
-				false,
-				basename( dirname( __FILE__ ) ) . '/languages'
-			);
-		}
-	}
-
-endif; // End If class exists check.
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-featured-image-with-url.php';
 
 /**
  * The main function for that returns Featured_Image_With_URL

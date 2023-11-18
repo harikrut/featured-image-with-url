@@ -162,12 +162,11 @@ class Featured_Image_With_URL_Admin {
 			return;
 		}
 
-		if ( isset( $_POST['harikrutfiwu_url'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['harikrutfiwu_url'] ) && isset( $_POST['harikrutfiwu_img_url_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['harikrutfiwu_img_url_nonce'] ), 'harikrutfiwu_img_url_nonce_action' ) ) {
 			global $harikrutfiwu;
 			// Update Featured Image URL.
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			$image_url = isset( $_POST['harikrutfiwu_url'] ) ? esc_url_raw( $_POST['harikrutfiwu_url'] ) : '';
-			$image_alt = isset( $_POST['harikrutfiwu_alt'] ) ? wp_strip_all_tags( $_POST['harikrutfiwu_alt'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$image_url = isset( $_POST['harikrutfiwu_url'] ) ? esc_url_raw( wp_unslash( $_POST['harikrutfiwu_url'] ) ) : '';
+			$image_alt = isset( $_POST['harikrutfiwu_alt'] ) ? sanitize_text_field( wp_unslash( $_POST['harikrutfiwu_alt'] ) ) : '';
 
 			if ( ! empty( $image_url ) ) {
 				if ( 'product' === get_post_type( $post_id ) ) {
@@ -179,7 +178,7 @@ class Featured_Image_With_URL_Admin {
 								'height'  => $img_url['height'],
 							);
 					} else {
-						$imagesize = @getimagesize( $image_url );
+						$imagesize = $harikrutfiwu->common->get_image_sizes( $image_url );
 						$image_url = array(
 							'img_url' => $image_url,
 							'width'   => isset( $imagesize[0] ) ? $imagesize[0] : '',
@@ -198,9 +197,11 @@ class Featured_Image_With_URL_Admin {
 			}
 		}
 
-		if ( isset( $_POST['harikrutfiwu_wcgallary'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			// Update WC Gallery.
-			$harikrutfiwu_wcgallary = isset( $_POST['harikrutfiwu_wcgallary'] ) ? $this->harikrutfiwu_sanitize( $_POST['harikrutfiwu_wcgallary'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( isset( $_POST['harikrutfiwu_wcgallary'] ) && isset( $_POST['harikrutfiwu_wcgallary_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['harikrutfiwu_wcgallary_nonce'] ), 'harikrutfiwu_wcgallary_nonce_action' ) ) {
+			global $harikrutfiwu;
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash and Sanitization already done in harikrutfiwu_sanitize function.
+			$harikrutfiwu_wcgallary = is_array( $_POST['harikrutfiwu_wcgallary'] ) ? $this->harikrutfiwu_sanitize( $_POST['harikrutfiwu_wcgallary'] ) : array();
+
 			if ( empty( $harikrutfiwu_wcgallary ) || 'product' !== $post->post_type ) {
 				return;
 			}
@@ -224,7 +225,7 @@ class Featured_Image_With_URL_Admin {
 							$gallary_image['height'] = isset( $old_images[ $gallary_image['url'] ]['height'] ) ? $old_images[ $gallary_image['url'] ]['height'] : '';
 
 						} else {
-							$imagesizes              = @getimagesize( $harikrutfiwu_gallary['url'] );
+							$imagesizes              = $harikrutfiwu->common->get_image_sizes( $harikrutfiwu_gallary['url'] );
 							$gallary_image['width']  = isset( $imagesizes[0] ) ? $imagesizes[0] : '';
 							$gallary_image['height'] = isset( $imagesizes[1] ) ? $imagesizes[1] : '';
 						}
@@ -251,6 +252,7 @@ class Featured_Image_With_URL_Admin {
 	 * @return array
 	 */
 	public function harikrutfiwu_get_image_meta( $post_id, $is_single_page = false ) {
+		global $harikrutfiwu;
 		$image_meta = array();
 		$img_url    = get_post_meta( $post_id, $this->image_meta_url, true );
 		$img_alt    = get_post_meta( $post_id, $this->image_meta_alt, true );
@@ -267,7 +269,7 @@ class Featured_Image_With_URL_Admin {
 				$image_meta['height'] = $img_url['height'];
 			} else {
 				if ( isset( $image_meta['img_url'] ) && '' !== $image_meta['img_url'] ) {
-					$imagesize = @getimagesize( $image_meta['img_url'] );
+					$imagesize = $harikrutfiwu->common->get_image_sizes( $image_meta['img_url'] );
 					$image_url = array(
 						'img_url' => $image_meta['img_url'],
 						'width'   => isset( $imagesize[0] ) ? $imagesize[0] : '',
@@ -525,7 +527,7 @@ class Featured_Image_With_URL_Admin {
 	 * @return void
 	 */
 	public function harikrutfiwu_save_product_variation_image( $variation_id, $i ) {
-
+		global $harikrutfiwu;
 		$image_url = isset( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) ? esc_url_raw( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		if ( ! empty( $image_url ) ) {
 			$img_url = get_post_meta( $variation_id, $this->image_meta_url, true );
@@ -536,7 +538,7 @@ class Featured_Image_With_URL_Admin {
 						'height'  => $img_url['height'],
 					);
 			} else {
-				$imagesize = @getimagesize( $image_url );
+				$imagesize = $harikrutfiwu->common->get_image_sizes( $image_url );
 				$image_url = array(
 					'img_url' => $image_url,
 					'width'   => isset( $imagesize[0] ) ? $imagesize[0] : '',

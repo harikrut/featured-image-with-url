@@ -19,9 +19,8 @@
 		"10up/phpcs-composer": "dev-master"
 	},
 	"scripts": {
-		"phpcs": "vendor/bin/phpcs featured-image-with-url.php includes/ --extensions=php -s",
-		"phpcs:compat": "vendor/bin/phpcs featured-image-with-url.php includes/ --standard=PHPCompatibilityWP --extensions=php --runtime-set testVersion 7.4-",
-		"lint-fix": "./vendor/bin/phpcbf --extensions=php ."
+		"phpcs": "vendor/bin/phpcs",
+		"lint-fix": "./vendor/bin/phpcbf --standard=phpcs.xml"
 	},
 	"minimum-stability": "dev",
 	"config": {

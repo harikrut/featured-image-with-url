@@ -184,7 +184,7 @@ class Featured_Image_With_URL_Common {
 		/**
 		 * Photon doesn't support query strings so we ignore image url with query string.
 		 */
-		$parsed = parse_url( $image_url );
+		$parsed = wp_parse_url( $image_url );
 		if ( isset( $parsed['query'] ) && ! empty( $parsed['query'] ) ) {
 			return $image_url;
 		}
@@ -200,7 +200,7 @@ class Featured_Image_With_URL_Common {
 			}
 
 			// If WPCOM hosted image use native transformations.
-			$img_host = parse_url( $image_url, PHP_URL_HOST );
+			$img_host = wp_parse_url( $image_url, PHP_URL_HOST );
 			if ( '.files.wordpress.com' === substr( $img_host, -20 ) ) {
 				return add_query_arg(
 					array(
@@ -273,7 +273,7 @@ class Featured_Image_With_URL_Common {
 					$gallary        = array();
 					$gallary['url'] = $gallary_image;
 
-					$imagesizes        = @getimagesize( $gallary_image );
+					$imagesizes        = $this->get_image_sizes( $gallary_image );
 					$gallary['width']  = isset( $imagesizes[0] ) ? $imagesizes[0] : '';
 					$gallary['height'] = isset( $imagesizes[1] ) ? $imagesizes[1] : '';
 
@@ -288,7 +288,7 @@ class Featured_Image_With_URL_Common {
 				$need_update = false;
 				foreach ( $gallary_images as $key => $gallary_image ) {
 					if ( ! isset( $gallary_image['width'] ) && isset( $gallary_image['url'] ) ) {
-						$imagesizes1                      = @getimagesize( $gallary_image['url'] );
+						$imagesizes1                      = $this->get_image_sizes( $gallary_image['url'] );
 						$gallary_images[ $key ]['width']  = isset( $imagesizes1[0] ) ? $imagesizes1[0] : '';
 						$gallary_images[ $key ]['height'] = isset( $imagesizes1[1] ) ? $imagesizes1[1] : '';
 						$need_update                      = true;
@@ -605,5 +605,17 @@ class Featured_Image_With_URL_Common {
 			$value['image']['src_h'] = $height;
 		}
 		return $value;
+	}
+
+	/**
+	 * Get image size from image url.
+	 *
+	 * @param string $image_url Image URL.
+	 * @return array
+	 */
+	public function get_image_sizes( $image_url ) {
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$size = @getimagesize( $image_url );
+		return $size;
 	}
 }

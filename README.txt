@@ -1,6 +1,6 @@
 === Featured Image with URL ===
 Contributors: harikrut
-Tags: featured image, url, image url, image, WooCommerce, remote featured image, product gallery
+Tags: featured image, external featured image, image url, remote featured image, external image url
 Requires PHP: 7.4
 Requires at least: 5.8
 Tested up to: 6.4
@@ -23,6 +23,9 @@ Featured Image with URL allows to use an external URL Images as Featured Image f
 * Image from URL for WooCommerce Product variation.
 * Display Resized Images as per image sizes like "thumbnail", "medium" or any custom-size
 * Lightweight & Easy to use
+
+<h3>Credits:</h3>
+This plugin based on the initial fork of [Featured Image by URL](https://wordpress.org/plugins/featured-image-by-url/) plugin. Thanks to the plugin author for the awesome work.
 
 = Contributing =
 * You can contribute to development of the plugin on [Github][1].
@@ -53,14 +56,6 @@ Featured Image with URL allows to use an external URL Images as Featured Image f
 **Maybe Not.** Plugin is works fine with most of themes but as you know Featured image is depends on themes So, This plugin may not work for some highly customized themes which are using non-extensible functions like `wp_get_attachment_url`.
 **Please feel free to create ticket [Here](https://wordpress.org/support/plugin/featured-image-with-url) if this plugin not working well for you. we would be happy to help you**
 
-== Screenshots ==
-
-1. Fill the URL field with External Image URL and Click Preview button
-2. Image will be shown there.
-3. Featured Image with URL at front-end.
-4. WooCommerce Product Featured image by external URL & Product Gallery from External URLs
-5. Front-end view of WooCommerce Product page which uses Featured image by URL
-6. Settings Panel
 
 == Changelog ==
 

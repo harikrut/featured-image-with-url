@@ -11,39 +11,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Get Gallary Slot
+ * Print Gallary Slot.
  *
  * @param string $image_url Image URL.
- * @return string HTML for Gallary Slot.
+ * @param int    $count     Count. Default 1.
+ * @return void
  */
-function harikrutfiwu_get_gallary_slot( $image_url = '' ) {
-	ob_start();
+function harikrutfiwu_print_gallary_slot( $image_url = '', $count = 1 ) {
 	?>
-	<div id="harikrutfiwu_wcgallary__COUNT__" class="harikrutfiwu_wcgallary">
-		<div id="harikrutfiwu_url_wrap__COUNT__" style="<?php echo ( ! empty( $image_url ) ? 'display:none;' : '' ); ?>">
+	<div id="harikrutfiwu_wcgallary<?php echo esc_attr( $count ); ?>" class="harikrutfiwu_wcgallary">
+		<div id="harikrutfiwu_url_wrap<?php echo esc_attr( $count ); ?>" style="<?php echo ( ! empty( $image_url ) ? 'display:none;' : '' ); ?>">
 			<input
-				id="harikrutfiwu_url__COUNT__"
+				id="harikrutfiwu_url<?php echo esc_attr( $count ); ?>"
 				class="harikrutfiwu_url"
 				type="text"
-				name="harikrutfiwu_wcgallary[__COUNT__][url]"
+				name="harikrutfiwu_wcgallary[<?php echo esc_attr( $count ); ?>][url]"
 				placeholder="<?php esc_attr_e( 'Image URL', 'featured-image-with-url' ); ?>"
-				data-id="__COUNT__"
-				value="<?php echo esc_url_raw( $image_url ); ?>"
+				data-id="<?php echo esc_attr( $count ); ?>"
+				value="<?php echo esc_url( $image_url ); ?>"
 			/>
-			<a id="harikrutfiwu_preview__COUNT__" class="harikrutfiwu_preview button" data-id="__COUNT__">
+			<a id="harikrutfiwu_preview<?php echo esc_attr( $count ); ?>" class="harikrutfiwu_preview button" data-id="<?php echo esc_attr( $count ); ?>">
 				<?php esc_html_e( 'Preview', 'featured-image-with-url' ); ?>
 			</a>
 		</div>
-		<div id="harikrutfiwu_img_wrap__COUNT__" class="harikrutfiwu_img_wrap" style="<?php echo ( empty( $image_url ) ? 'display:none;' : '' ); ?>">
-			<span href="#" class="harikrutfiwu_remove" data-id="__COUNT__"></span>
-			<img id="harikrutfiwu_img__COUNT__" class="harikrutfiwu_img" data-id="__COUNT__" src="<?php echo esc_url( $image_url ); ?>" />
+		<div id="harikrutfiwu_img_wrap<?php echo esc_attr( $count ); ?>" class="harikrutfiwu_img_wrap" style="<?php echo ( empty( $image_url ) ? 'display:none;' : '' ); ?>">
+			<span href="#" class="harikrutfiwu_remove" data-id="<?php echo esc_attr( $count ); ?>"></span>
+			<img id="harikrutfiwu_img<?php echo esc_attr( $count ); ?>" class="harikrutfiwu_img" data-id="<?php echo esc_attr( $count ); ?>" src="<?php echo esc_url( $image_url ); ?>" />
 		</div>
 	</div>
 	<?php
-	$gallery_image = ob_get_clean();
-	return preg_replace( '/\s+/', ' ', trim( $gallery_image ) );
 }
-
 ?>
 
 <div id="harikrutfiwu_wcgallary_metabox_content" >
@@ -53,21 +50,39 @@ function harikrutfiwu_get_gallary_slot( $image_url = '' ) {
 	$gallary_images = $harikrutfiwu->common->harikrutfiwu_get_wcgallary_meta( $post->ID );
 	if ( ! empty( $gallary_images ) ) {
 		foreach ( $gallary_images as $gallary_image ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
-			echo str_replace( '__COUNT__', $count, harikrutfiwu_get_gallary_slot( $gallary_image['url'] ) );
+			harikrutfiwu_print_gallary_slot( $gallary_image['url'], $count );
 			$count++;
 		}
 	}
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
-	echo str_replace( '__COUNT__', $count, harikrutfiwu_get_gallary_slot() );
+	harikrutfiwu_print_gallary_slot( '', $count );
 	$count++;
 	?>
 </div>
+<template id="harikrutfiwu_wcgallary_template" style="display: none;">
+	<?php harikrutfiwu_print_gallary_slot( '', '__COUNT__' ); ?>
+</template>
 <div style="clear:both"></div>
+
 <?php
 wp_nonce_field( 'harikrutfiwu_wcgallary_nonce_action', 'harikrutfiwu_wcgallary_nonce' );
 ?>
 <script>
+	function harikrutfiwuGetGallaryTemplate(count = 1){
+		const template = document.getElementById('harikrutfiwu_wcgallary_template').content.cloneNode(true);
+		template.getElementById('harikrutfiwu_wcgallary__COUNT__').id = "harikrutfiwu_wcgallary" + count;
+		template.getElementById('harikrutfiwu_url_wrap__COUNT__').id = "harikrutfiwu_url_wrap" + count;
+		template.getElementById('harikrutfiwu_url__COUNT__').setAttribute('data-id', count);
+		template.getElementById('harikrutfiwu_url__COUNT__').name = "harikrutfiwu_wcgallary[" + count + "][url]";
+		template.getElementById('harikrutfiwu_url__COUNT__').id = "harikrutfiwu_url" + count
+		template.getElementById('harikrutfiwu_preview__COUNT__').setAttribute('data-id', count);
+		template.getElementById('harikrutfiwu_preview__COUNT__').id = "harikrutfiwu_preview" + count;
+		template.getElementById('harikrutfiwu_img_wrap__COUNT__').id = "harikrutfiwu_img_wrap" + count;
+		template.querySelector('.harikrutfiwu_remove').setAttribute('data-id', count);
+		template.getElementById('harikrutfiwu_img__COUNT__').setAttribute('data-id', count);
+		template.getElementById('harikrutfiwu_img__COUNT__').id = "harikrutfiwu_img" + count;
+		return template;
+	}
+
 	jQuery(document).ready(function($){
 		var counter = <?php echo absint( $count ); ?>;
 		// Preview
@@ -88,9 +103,7 @@ wp_nonce_field( 'harikrutfiwu_wcgallary_nonce_action', 'harikrutfiwu_wcgallary_n
 						$('#harikrutfiwu_remove'+id).show();
 						$('#harikrutfiwu_url'+id).hide();
 						$('#harikrutfiwu_preview'+id).hide();
-						new_element_str = '<?php echo harikrutfiwu_get_gallary_slot(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped. ?>';
-						new_element_str = new_element_str.replace(/__COUNT__/g, counter );
-						$('#harikrutfiwu_wcgallary_metabox_content').append( new_element_str );
+						$('#harikrutfiwu_wcgallary_metabox_content').append( harikrutfiwuGetGallaryTemplate(counter) );
 					}
 				});
 			}

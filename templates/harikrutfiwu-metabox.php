@@ -27,7 +27,7 @@ if ( isset( $image_meta['img_alt'] ) && ! empty( $image_meta['img_alt'] ) ) {
 		type="text"
 		name="harikrutfiwu_url"
 		placeholder="<?php esc_attr_e( 'Image URL', 'featured-image-with-url' ); ?>"
-		value="<?php echo esc_url_raw( $image_url ); ?>"
+		value="<?php echo esc_url( $image_url ); ?>"
 	/>
 	<a id="harikrutfiwu_preview" class="button" >
 		<?php esc_html_e( 'Preview', 'featured-image-with-url' ); ?>

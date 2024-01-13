@@ -514,6 +514,11 @@ class HARIKRUTFIWU_Admin {
 					<?php esc_html_e( 'Preview', 'featured-image-with-url' ); ?>
 				</a>
 			</div>
+			<?php
+			$nonce_name  = 'harikrutfiwu_pvar_url_' . $variation->ID . '_nonce';
+			$action_name = $nonce_name . '_action';
+			wp_nonce_field( $action_name, $nonce_name );
+			?>
 		</div>
 		<?php
 	}
@@ -528,26 +533,30 @@ class HARIKRUTFIWU_Admin {
 	 */
 	public function harikrutfiwu_save_product_variation_image( $variation_id, $i ) {
 		global $harikrutfiwu;
-		$image_url = isset( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) ? esc_url_raw( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-		if ( ! empty( $image_url ) ) {
-			$img_url = get_post_meta( $variation_id, $this->image_meta_url, true );
-			if ( is_array( $img_url ) && isset( $img_url['img_url'] ) && $image_url === $img_url['img_url'] ) {
+		$nonce_name = 'harikrutfiwu_pvar_url_' . $variation_id . '_nonce';
+
+		if ( isset( $_POST[ $nonce_name ] ) && wp_verify_nonce( sanitize_key( $_POST[ $nonce_name ] ), $nonce_name . '_action' ) ) {
+			$image_url = isset( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) ? esc_url_raw( wp_unslash( $_POST['harikrutfiwu_pvar_url'][ $variation_id ] ) ) : '';
+			if ( ! empty( $image_url ) ) {
+				$img_url = get_post_meta( $variation_id, $this->image_meta_url, true );
+				if ( is_array( $img_url ) && isset( $img_url['img_url'] ) && $image_url === $img_url['img_url'] ) {
+						$image_url = array(
+							'img_url' => $image_url,
+							'width'   => $img_url['width'],
+							'height'  => $img_url['height'],
+						);
+				} else {
+					$imagesize = $harikrutfiwu->common->get_image_sizes( $image_url );
 					$image_url = array(
 						'img_url' => $image_url,
-						'width'   => $img_url['width'],
-						'height'  => $img_url['height'],
+						'width'   => isset( $imagesize[0] ) ? $imagesize[0] : '',
+						'height'  => isset( $imagesize[1] ) ? $imagesize[1] : '',
 					);
+				}
+				update_post_meta( $variation_id, $this->image_meta_url, $image_url );
 			} else {
-				$imagesize = $harikrutfiwu->common->get_image_sizes( $image_url );
-				$image_url = array(
-					'img_url' => $image_url,
-					'width'   => isset( $imagesize[0] ) ? $imagesize[0] : '',
-					'height'  => isset( $imagesize[1] ) ? $imagesize[1] : '',
-				);
+				delete_post_meta( $variation_id, $this->image_meta_url );
 			}
-			update_post_meta( $variation_id, $this->image_meta_url, $image_url );
-		} else {
-			delete_post_meta( $variation_id, $this->image_meta_url );
 		}
 	}
 

@@ -220,8 +220,6 @@ class HARIKRUTFIWU_Common {
 					return jetpack_photon_url( $image_url, array( 'fit' => "$width,$height" ) );
 				}
 			}
-			// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			// $image_url = Jetpack_PostImages::fit_image_url ( $image_url, $image_size['width'], $image_size['height'] );
 		}
 
 		// Return it.

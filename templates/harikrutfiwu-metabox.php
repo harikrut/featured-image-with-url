@@ -2,7 +2,7 @@
 /**
  * Featured Image with URL metabox Template.
  *
- * @package Featured_Image_With_URL
+ * @package HARIKRUTFIWU
  * @since 1.0.0
  */
 

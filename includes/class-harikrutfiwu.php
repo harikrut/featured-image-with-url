@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Featured_Image_With_URL
+ * Class HARIKRUTFIWU
  *
- * @package Featured_Image_With_URL
+ * @package HARIKRUTFIWU
  */
 
 // If this file is called directly, abort.
@@ -11,58 +11,58 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-if ( ! class_exists( 'Featured_Image_With_URL' ) ) :
+if ( ! class_exists( 'HARIKRUTFIWU' ) ) :
 
 	/**
 	 * Main Featured Image with URL class
 	 */
-	class Featured_Image_With_URL {
+	class HARIKRUTFIWU {
 
 		/** Singleton *************************************************************/
 		/**
-		 * Featured_Image_With_URL The one true Featured_Image_With_URL.
+		 * HARIKRUTFIWU The one true HARIKRUTFIWU.
 		 *
-		 * @var Featured_Image_With_URL $instance
+		 * @var HARIKRUTFIWU $instance
 		 */
 		private static $instance;
 
 		/**
 		 * Admin Instance.
 		 *
-		 * @var Featured_Image_With_URL_Admin $admin
+		 * @var HARIKRUTFIWU_Admin $admin
 		 */
 		public $admin;
 
 		/**
 		 * Common Instance.
 		 *
-		 * @var Featured_Image_With_URL_Common $common
+		 * @var HARIKRUTFIWU_Common $common
 		 */
 		public $common;
 
 		/**
 		 * Main Featured Image with URL Instance.
 		 *
-		 * Insure that only one instance of Featured_Image_With_URL exists in memory at any one time.
+		 * Insure that only one instance of HARIKRUTFIWU exists in memory at any one time.
 		 * Also prevents needing to define globals all over the place.
 		 *
 		 * @since 1.0.0
 		 * @static object $instance
-		 * @uses Featured_Image_With_URL::setup_constants() Setup the constants needed.
-		 * @uses Featured_Image_With_URL::includes() Include the required files.
-		 * @uses Featured_Image_With_URL::load_textdomain() load the language files.
-		 * @see run_harikrutfiwu()
+		 * @uses HARIKRUTFIWU::setup_constants() Setup the constants needed.
+		 * @uses HARIKRUTFIWU::includes() Include the required files.
+		 * @uses HARIKRUTFIWU::load_textdomain() load the language files.
+		 * @see harikrutfiwu_run()
 		 * @return object|Featured_Image_with_URL the one true Featured Image with URL.
 		 */
 		public static function instance() {
-			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Featured_Image_With_URL ) ) {
-				self::$instance = new Featured_Image_With_URL();
+			if ( ! isset( self::$instance ) && ! ( self::$instance instanceof HARIKRUTFIWU ) ) {
+				self::$instance = new HARIKRUTFIWU();
 
 				add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
 
 				self::$instance->includes();
-				self::$instance->admin  = new Featured_Image_With_URL_Admin();
-				self::$instance->common = new Featured_Image_With_URL_Common();
+				self::$instance->admin  = new HARIKRUTFIWU_Admin();
+				self::$instance->common = new HARIKRUTFIWU_Common();
 
 			}
 			return self::$instance;
@@ -71,18 +71,18 @@ if ( ! class_exists( 'Featured_Image_With_URL' ) ) :
 		/** Magic Methods *********************************************************/
 
 		/**
-		 * A dummy constructor to prevent Featured_Image_With_URL from being loaded more than once.
+		 * A dummy constructor to prevent HARIKRUTFIWU from being loaded more than once.
 		 *
 		 * @since 1.0.0
-		 * @see Featured_Image_With_URL::instance()
-		 * @see run_harikrutfiwu()
+		 * @see HARIKRUTFIWU::instance()
+		 * @see harikrutfiwu_run()
 		 */
 		private function __construct() {
 			/* Do nothing here */
 		}
 
 		/**
-		 * A dummy magic method to prevent Featured_Image_With_URL from being cloned.
+		 * A dummy magic method to prevent HARIKRUTFIWU from being cloned.
 		 *
 		 * @since 1.0.0
 		 */
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Featured_Image_With_URL' ) ) :
 		}
 
 		/**
-		 * A dummy magic method to prevent Featured_Image_With_URL from being unserialized.
+		 * A dummy magic method to prevent HARIKRUTFIWU from being unserialized.
 		 *
 		 * @since 1.0.0
 		 */
@@ -107,8 +107,8 @@ if ( ! class_exists( 'Featured_Image_With_URL' ) ) :
 		 * @return void
 		 */
 		private function includes() {
-			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-featured-image-with-url-admin.php';
-			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-featured-image-with-url-common.php';
+			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-harikrutfiwu-admin.php';
+			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-harikrutfiwu-common.php';
 		}
 
 		/**

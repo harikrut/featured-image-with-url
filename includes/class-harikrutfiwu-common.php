@@ -5,8 +5,8 @@
  * @link       http://harikrut.com/
  * @since      1.0.0
  *
- * @package    Featured_Image_With_URL
- * @subpackage Featured_Image_With_URL/includes
+ * @package    HARIKRUTFIWU
+ * @subpackage HARIKRUTFIWU/includes
  */
 
 // Exit if accessed directly.
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since      1.0.0
  */
-class Featured_Image_With_URL_Common {
+class HARIKRUTFIWU_Common {
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -45,7 +45,7 @@ class Featured_Image_With_URL_Common {
 		add_action( 'admin_init', array( $this, 'harikrutfiwu_woo_thumb_support' ) );
 
 		$options       = get_option( HARIKRUTFIWU_OPTIONS );
-		$resize_images = isset( $options['resize_images'] ) ? $options['resize_images'] : false;
+		$resize_images = isset( $options['harikrutfiwu_resize_images'] ) ? $options['harikrutfiwu_resize_images'] : false;
 		if ( ! $resize_images ) {
 			add_filter( 'harikrutfiwu_user_resized_images', '__return_false' );
 		}
@@ -456,7 +456,7 @@ class Featured_Image_With_URL_Common {
 	 */
 	public function harikrutfiwu_is_disallow_posttype( $posttype ) {
 		$options            = get_option( HARIKRUTFIWU_OPTIONS );
-		$disabled_posttypes = isset( $options['disabled_posttypes'] ) ? $options['disabled_posttypes'] : array();
+		$disabled_posttypes = isset( $options['harikrutfiwu_disabled_posttypes'] ) ? $options['harikrutfiwu_disabled_posttypes'] : array();
 
 		return in_array( $posttype, $disabled_posttypes, true );
 	}

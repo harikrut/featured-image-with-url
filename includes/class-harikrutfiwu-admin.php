@@ -2,9 +2,9 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package     Featured_Image_With_URL
- * @subpackage  Featured_Image_With_URL/admin
- * @copyright   Copyright (c) 2018, Harikrut Technolab
+ * @package     HARIKRUTFIWU
+ * @subpackage  HARIKRUTFIWU/admin
+ * @copyright   Copyright (c) Harikrut Technolab
  * @since       1.0.0
  */
 
@@ -16,10 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package     Featured_Image_With_URL
- * @subpackage  Featured_Image_With_URL/admin
+ * @package     HARIKRUTFIWU
+ * @subpackage  HARIKRUTFIWU/admin
  */
-class Featured_Image_With_URL_Admin {
+class HARIKRUTFIWU_Admin {
 
 	/**
 	 * Image meta key for saving image URL.
@@ -64,7 +64,7 @@ class Featured_Image_With_URL_Admin {
 	 */
 	public function harikrutfiwu_add_metabox( $post_type, $post ) {
 		$options            = get_option( HARIKRUTFIWU_OPTIONS );
-		$disabled_posttypes = isset( $options['disabled_posttypes'] ) ? $options['disabled_posttypes'] : array();
+		$disabled_posttypes = isset( $options['harikrutfiwu_disabled_posttypes'] ) ? $options['harikrutfiwu_disabled_posttypes'] : array();
 
 		if ( in_array( $post_type, $disabled_posttypes, true ) ) {
 			return;
@@ -347,25 +347,25 @@ class Featured_Image_With_URL_Admin {
 
 		// Register a new field in the "harikrutfiwu_section" section, inside the "harikrutfiwu" page.
 		add_settings_field(
-			'disabled_posttypes',
+			'harikrutfiwu_disabled_posttypes',
 			__( 'Disable Post types', 'featured-image-with-url' ),
 			array( $this, 'disabled_posttypes_callback' ),
 			'harikrutfiwu',
 			'harikrutfiwu_section',
 			array(
-				'label_for' => 'disabled_posttypes',
+				'label_for' => 'harikrutfiwu_disabled_posttypes',
 				'class'     => 'harikrutfiwu_row',
 			)
 		);
 
 		add_settings_field(
-			'resize_images',
+			'harikrutfiwu_resize_images',
 			__( 'Display Resized Images', 'featured-image-with-url' ),
 			array( $this, 'resize_images_callback' ),
 			'harikrutfiwu',
 			'harikrutfiwu_section',
 			array(
-				'label_for' => 'resize_images',
+				'label_for' => 'harikrutfiwu_resize_images',
 				'class'     => 'harikrutfiwu_row',
 			)
 		);
@@ -395,7 +395,7 @@ class Featured_Image_With_URL_Admin {
 
 		$options            = get_option( HARIKRUTFIWU_OPTIONS );
 		$post_types         = $this->harikrutfiwu_get_posttypes( true );
-		$disabled_posttypes = isset( $options['disabled_posttypes'] ) ? $options['disabled_posttypes'] : array();
+		$disabled_posttypes = isset( $options['harikrutfiwu_disabled_posttypes'] ) ? $options['harikrutfiwu_disabled_posttypes'] : array();
 
 		if ( ! empty( $post_types ) ) {
 			foreach ( $post_types as $key => $post_type ) {
@@ -403,7 +403,7 @@ class Featured_Image_With_URL_Admin {
 				<label for="<?php echo esc_attr( $key ); ?>" style="display: block;">
 					<input
 						name="<?php echo esc_attr( HARIKRUTFIWU_OPTIONS . '[' . $args['label_for'] . ']' ); ?>[]"
-						class="disabled_posttypes"
+						class="harikrutfiwu_disabled_posttypes"
 						id="<?php echo esc_attr( $key ); ?>"
 						type="checkbox" value="<?php echo esc_attr( $key ); ?>"
 						<?php echo ( in_array( $key, $disabled_posttypes, true ) ) ? 'checked="checked"' : ''; ?>
@@ -431,14 +431,14 @@ class Featured_Image_With_URL_Admin {
 	public function resize_images_callback( $args ) {
 		// Get the value of the setting we've registered with register_setting().
 		$options       = get_option( HARIKRUTFIWU_OPTIONS );
-		$resize_images = isset( $options['resize_images'] ) ? $options['resize_images'] : false;
+		$resize_images = isset( $options['harikrutfiwu_resize_images'] ) ? $options['harikrutfiwu_resize_images'] : false;
 		?>
-		<label for="resize_images">
+		<label for="harikrutfiwu_resize_images">
 			<input
 				name="<?php echo esc_attr( HARIKRUTFIWU_OPTIONS . '[' . $args['label_for'] . ']' ); ?>"
 				type="checkbox"
 				value="1"
-				id="resize_images"
+				id="harikrutfiwu_resize_images"
 				<?php echo ( ( ! defined( 'JETPACK__VERSION' ) ) ? 'disabled="disabled"' : ( ( $resize_images ) ? 'checked="checked"' : '' ) ); ?>
 			/>
 			<?php esc_html_e( 'Enable display resized images for image sizes like thumbnail, medium, large etc..', 'featured-image-with-url' ); ?>
@@ -470,7 +470,7 @@ class Featured_Image_With_URL_Admin {
 			return $post_types;
 		} else {
 			$options            = get_option( HARIKRUTFIWU_OPTIONS );
-			$disabled_posttypes = isset( $options['disabled_posttypes'] ) ? $options['disabled_posttypes'] : array();
+			$disabled_posttypes = isset( $options['harikrutfiwu_disabled_posttypes'] ) ? $options['harikrutfiwu_disabled_posttypes'] : array();
 			$post_types         = array_diff( $post_types, $disabled_posttypes );
 		}
 

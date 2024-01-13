@@ -14,7 +14,7 @@
  * Requires PHP:      7.4
  * Tested up to:      6.4
  *
- * @package     Featured_Image_With_URL
+ * @package     HARIKRUTFIWU
  * @author      Harikrut Technolab <harikruttech@gmail.com>
  */
 
@@ -56,25 +56,25 @@ if ( ! defined( 'HARIKRUTFIWU_WCGALLARY' ) ) {
 	define( 'HARIKRUTFIWU_WCGALLARY', '_harikrutfiwu_wcgallary' );
 }
 
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-featured-image-with-url.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-harikrutfiwu.php';
 
 /**
- * The main function for that returns Featured_Image_With_URL
+ * The main function for that returns HARIKRUTFIWU
  *
- * The main function responsible for returning the one true Featured_Image_With_URL
+ * The main function responsible for returning the one true HARIKRUTFIWU
  * Instance to functions everywhere.
  *
  * Use this function like you would a global variable, except without needing
  * to declare the global.
  *
- * Example: <?php $harikrutfiwu = run_harikrutfiwu(); ?>
+ * Example: <?php $harikrutfiwu = harikrutfiwu_run(); ?>
  *
  * @since 1.0.0
- * @return object|Featured_Image_With_URL The one true Featured_Image_With_URL Instance.
+ * @return object|HARIKRUTFIWU The one true HARIKRUTFIWU Instance.
  */
-function run_harikrutfiwu() {
-	return Featured_Image_With_URL::instance();
+function harikrutfiwu_run() {
+	return HARIKRUTFIWU::instance();
 }
 
-// Get Featured_Image_With_URL Running.
-$GLOBALS['harikrutfiwu'] = run_harikrutfiwu();
+// Get Featured Image With URL Running.
+$GLOBALS['harikrutfiwu'] = harikrutfiwu_run();

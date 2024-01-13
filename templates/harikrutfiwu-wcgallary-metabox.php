@@ -2,7 +2,7 @@
 /**
  * Featured Image with URL metabox Template
  *
- * @package Featured_Image_With_URL/Templates
+ * @package HARIKRUTFIWU/Templates
  */
 
 // Exit if accessed directly.

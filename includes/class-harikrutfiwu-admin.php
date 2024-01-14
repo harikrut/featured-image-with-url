@@ -126,7 +126,7 @@ class HARIKRUTFIWU_Admin {
 	 */
 	public function enqueue_admin_styles( $hook ) {
 		$css_dir = HARIKRUTFIWU_PLUGIN_URL . 'assets/css/';
-		wp_enqueue_style( 'harikrutfiwu-admin', $css_dir . 'featured-image-with-url-admin.css', array(), '1.0.0', '' );
+		wp_enqueue_style( 'harikrutfiwu-admin', $css_dir . 'harikrutfiwu-admin.css', array(), '1.0.0', '' );
 	}
 
 	/**
@@ -140,7 +140,7 @@ class HARIKRUTFIWU_Admin {
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		$js_dir = HARIKRUTFIWU_PLUGIN_URL . 'assets/js/';
-		wp_register_script( 'harikrutfiwu-admin', $js_dir . 'featured-image-with-url-admin.js', array( 'jquery' ), HARIKRUTFIWU_VERSION, true );
+		wp_register_script( 'harikrutfiwu-admin', $js_dir . 'harikrutfiwu-admin.js', array( 'jquery' ), HARIKRUTFIWU_VERSION, true );
 		$strings = array(
 			'invalid_image_url' => __( 'Error in Image URL', 'featured-image-with-url' ),
 		);

@@ -51,6 +51,12 @@ class HARIKRUTFIWU_Admin {
 			// Add & Save Product Variation Featured image by URL.
 			add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'harikrutfiwu_add_product_variation_image_selector' ), 10, 3 );
 			add_action( 'woocommerce_save_product_variation', array( $this, 'harikrutfiwu_save_product_variation_image' ), 10, 2 );
+
+			// Handle migration from "Featured Image by URL" plugin.
+			add_action( 'admin_notices', array( $this, 'maybe_display_migrate_from_fibu_notices' ) );
+			add_action( 'admin_post_harikrutfiwu_migrate_from_fibu', array( $this, 'handle_migration_from_fibu' ) );
+			add_action( 'admin_post_harikrutfiwu_migration_notice_dismissed', array( $this, 'dismiss_fibu_migration_notice' ) );
+			add_filter( 'removable_query_args', array( $this, 'removable_query_args' ) );
 		}
 	}
 
@@ -587,5 +593,179 @@ class HARIKRUTFIWU_Admin {
 		} else {
 			return is_scalar( $var ) ? sanitize_text_field( wp_unslash( $var ) ) : $var;
 		}
+	}
+
+	/**
+	 * Display notices for migration from "Featured Image by URL" plugin.
+	 *
+	 * @return void
+	 */
+	public function maybe_display_migrate_from_fibu_notices() {
+		// Check if the migration was successful.
+		if ( isset( $_GET['fibu_migration'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$is_migrated = sanitize_key( $_GET['fibu_migration'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'success' === $is_migrated ) {
+				?>
+				<div class="notice notice-success is-dismissible">
+					<p>
+						<?php esc_html_e( 'The migration from the Featured Image by URL plugin was successful.', 'featured-image-with-url' ); ?>
+					</p>
+				</div>
+				<?php
+			} elseif ( 'dismiss' === $is_migrated ) {
+				?>
+				<div class="notice notice-success is-dismissible">
+					<p>
+						<?php esc_html_e( 'The migration notice has been dismissed.', 'featured-image-with-url' ); ?>
+					</p>
+				</div>
+				<?php
+				return;
+			}
+		}
+
+		$is_active = is_plugin_active( 'featured-image-by-url/featured-image-by-url.php' );
+
+		// Check if the plugin is active and not already migrated or dismissed.
+		if ( $is_active ) {
+			$is_migrated         = get_option( 'harikrutfiwu_migrated_from_fibu', false );
+			$is_notice_dismissed = get_option( 'harikrutfiwu_migration_notice_dismissed', false );
+			if ( $is_migrated || $is_notice_dismissed ) {
+				return;
+			}
+			?>
+			<div class="notice notice-info is-dismissible">
+				<p>
+					<?php
+					printf(
+						/* translators: 1: Plugin name, 2: Migration URL */
+						esc_html__( 'You are currently using the %1$s plugin, which has been closed and is no longer receiving maintenance. To ensure the uninterrupted functionality of the plugin, please migrate your data from %1$s to %2$s.', 'featured-image-with-url' ),
+						'<strong>' . esc_html__( 'Featured Image by URL', 'featured-image-by-url' ) . '</strong>',
+						'<strong>' . esc_html__( 'Featured Image with URL', 'featured-image-with-url' ) . '</strong>'
+					);
+					?>
+				</p>
+				<p>
+					<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'action', 'harikrutfiwu_migrate_from_fibu', admin_url( 'admin-post.php' ) ), 'harikrutfiwu_migrate_from_fibu_action', 'harikrutfiwu_migrate_from_fibu_nonce' ) ); ?>" class="button button-primary">
+						<?php esc_html_e( 'Migrate Now', 'featured-image-with-url' ); ?>
+					</a>
+					<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'action', 'harikrutfiwu_migration_notice_dismissed', admin_url( 'admin-post.php' ) ), 'harikrutfiwu_migration_notice_dismissed_action', 'harikrutfiwu_migration_notice_dismissed_nonce' ) ); ?>" class="button button-secondary">
+						<?php esc_html_e( 'Dismiss', 'featured-image-with-url' ); ?>
+					</a>
+				</p>
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Handle migration from "Featured Image by URL" plugin.
+	 *
+	 * @return void
+	 */
+	public function handle_migration_from_fibu() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['harikrutfiwu_migrate_from_fibu_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['harikrutfiwu_migrate_from_fibu_nonce'] ), 'harikrutfiwu_migrate_from_fibu_action' ) ) {
+			wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'featured-image-with-url' ) );
+		}
+
+		// Migrate data from "Featured Image by URL" plugin.
+		$this->migrate_from_fibu();
+
+		// Redirect to the settings page.
+		wp_safe_redirect( admin_url( 'options-general.php?page=harikrutfiwu&fibu_migration=success' ) );
+		exit;
+	}
+
+	/**
+	 * Migrate data from "Featured Image by URL" plugin.
+	 *
+	 * @return void
+	 */
+	public function migrate_from_fibu() {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct SQL query is required here.
+
+		// Migrate the image url for the featured image.
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s",
+				'_harikrutfiwu_url',
+				'_knawatfibu_url'
+			)
+		);
+
+		// Migrate the image alt for the featured image.
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s",
+				'_harikrutfiwu_alt',
+				'_knawatfibu_alt'
+			)
+		);
+
+		// Migrate the image url for the product gallery.
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s",
+				'_harikrutfiwu_wcgallary',
+				'_knawatfibu_wcgallary'
+			)
+		);
+
+		// phpcs:enable
+
+		// Migrate the settings.
+		$settings      = get_option( HARIKRUTFIWU_OPTIONS, array() );
+		$fibu_settings = get_option( 'knawatfibu_options', array() );
+		if ( empty( $settings ) && ! empty( $fibu_settings ) ) {
+			$settings = array(
+				'harikrutfiwu_disabled_posttypes' => isset( $fibu_settings['disabled_posttypes'] ) ? $fibu_settings['disabled_posttypes'] : array(),
+				'harikrutfiwu_resize_images'      => isset( $fibu_settings['resize_images'] ) ? $fibu_settings['resize_images'] : false,
+			);
+
+			// Save the settings.
+			update_option( HARIKRUTFIWU_OPTIONS, $settings );
+		}
+
+		// Set the "migrated_from_fibu" option to true.
+		update_option( 'harikrutfiwu_migrated_from_fibu', true );
+	}
+
+	/**
+	 * Dismiss the migration notice.
+	 *
+	 * @return void
+	 */
+	public function dismiss_fibu_migration_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['harikrutfiwu_migration_notice_dismissed_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['harikrutfiwu_migration_notice_dismissed_nonce'] ), 'harikrutfiwu_migration_notice_dismissed_action' ) ) {
+			wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'featured-image-with-url' ) );
+		}
+
+		// Set the "migration_notice_dismissed" option to true.
+		update_option( 'harikrutfiwu_migration_notice_dismissed', true );
+
+		// Redirect to the settings page.
+		wp_safe_redirect( admin_url( 'options-general.php?page=harikrutfiwu&fibu_migration=dismiss' ) );
+		exit;
+	}
+
+	/**
+	 * Add "fibu_migration" in list of query variable names to remove.
+	 *
+	 * @param [] $removable_query_args An array of query variable names to remove from a URL.
+	 * @return []
+	 */
+	public function removable_query_args( array $removable_query_args ): array {
+		$removable_query_args[] = 'fibu_migration';
+		return $removable_query_args;
 	}
 }

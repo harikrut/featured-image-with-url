@@ -57,6 +57,13 @@ This plugin based on the initial fork of [Featured Image by URL](https://wordpre
 **Please feel free to create ticket [Here](https://wordpress.org/support/plugin/featured-image-with-url) if this plugin not working well for you. we would be happy to help you**
 
 
+== Screenshots ==
+1. Fill the URL field with the External Image URL and click the Preview button.
+2. The image will be displayed there.
+3. WooCommerce Product Featured Image by External URL & Product Gallery from External URLs.
+4. Front-end view of the WooCommerce Product page, which utilizes the Featured Image with URL.
+5. Settings page (Settings > Featured Image with URL).
+
 == Changelog ==
 
 = 1.0.0 =

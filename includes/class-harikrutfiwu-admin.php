@@ -257,6 +257,21 @@ class HARIKRUTFIWU_Admin {
 		$img_url    = get_post_meta( $post_id, $this->image_meta_url, true );
 		$img_alt    = get_post_meta( $post_id, $this->image_meta_alt, true );
 
+		// Compatibility with "Featured Image by URL" plugin.
+		if ( empty( $img_url ) ) {
+			$old_img_url = get_post_meta( $post_id, '_knawatfibu_url', true );
+			if ( ! empty( $old_img_url ) ) {
+				$img_url     = $old_img_url;
+				$old_img_alt = get_post_meta( $post_id, '_knawatfibu_alt', true );
+				update_post_meta( $post_id, $this->image_meta_url, $old_img_url );
+
+				if ( ! empty( $old_img_alt ) && empty( $img_alt ) ) {
+					$img_alt = $old_img_alt;
+					update_post_meta( $post_id, $this->image_meta_alt, $old_img_alt );
+				}
+			}
+		}
+
 		if ( is_array( $img_url ) && isset( $img_url['img_url'] ) ) {
 			$image_meta['img_url'] = $img_url['img_url'];
 		} else {
@@ -500,7 +515,7 @@ class HARIKRUTFIWU_Admin {
 		<div id="harikrutfiwu_product_variation_<?php echo esc_attr( $variation->ID ); ?>" class="harikrutfiwu_product_variation form-row form-row-first">
 			<label for="harikrutfiwu_pvar_url_<?php echo esc_attr( $variation->ID ); ?>">
 				<strong>
-					<?php esc_html_e( 'Product Variation Image by URL', 'featured-image-with-url' ); ?>
+					<?php esc_html_e( 'Product Variation Image with URL', 'featured-image-with-url' ); ?>
 				</strong>
 			</label>
 

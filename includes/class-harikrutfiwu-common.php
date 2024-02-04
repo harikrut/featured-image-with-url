@@ -263,6 +263,16 @@ class HARIKRUTFIWU_Common {
 		$image_meta = array();
 
 		$gallary_images = get_post_meta( $post_id, HARIKRUTFIWU_WCGALLARY, true );
+
+		// Compatibility with "Featured Image by URL" plugin.
+		if ( empty( $gallary_images ) ) {
+			$old_gallary_images = get_post_meta( $post_id, '_knawatfibu_wcgallary', true );
+			if ( ! empty( $old_gallary_images ) ) {
+				$gallary_images = $old_gallary_images;
+				update_post_meta( $post_id, HARIKRUTFIWU_WCGALLARY, $old_gallary_images );
+			}
+		}
+
 		if ( ! is_array( $gallary_images ) && ! empty( $gallary_images ) ) {
 			$gallary_images = explode( ',', $gallary_images );
 			if ( ! empty( $gallary_images ) ) {

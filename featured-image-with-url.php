@@ -12,7 +12,7 @@
  * Domain Path:       /languages
  * Requires at least: 5.8
  * Requires PHP:      7.4
- * Tested up to:      6.4
+ * Tested up to:      6.6
  *
  * @package     HARIKRUTFIWU
  * @author      Harikrut Technolab <harikruttech@gmail.com>

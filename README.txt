@@ -5,7 +5,7 @@ Requires PHP: 7.4
 Requires at least: 5.8
 Tested up to: 6.6
 WC tested up to: 9.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,11 @@ This plugin based on the initial fork of [Featured Image by URL](https://wordpre
 5. Settings page (Settings > Featured Image with URL).
 
 == Changelog ==
+
+== 1.0.2 - 2020-08-25 ==
+* **Added:** Update plugin assets GitHub action workflow.
+* **Changed:** Bump WordPress "tested up to" version 6.6
+* **Changed:** Bump WooCommerce "tested up to" version 9.2
 
 == 1.0.1 ==
 * **Added:** Backward compatibility for the "Featured Image by URL" plugin.

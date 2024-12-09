@@ -132,7 +132,7 @@ class HARIKRUTFIWU_Admin {
 	 */
 	public function enqueue_admin_styles( $hook ) {
 		$css_dir = HARIKRUTFIWU_PLUGIN_URL . 'assets/css/';
-		wp_enqueue_style( 'harikrutfiwu-admin', $css_dir . 'harikrutfiwu-admin.css', array(), '1.0.2', '' );
+		wp_enqueue_style( 'harikrutfiwu-admin', $css_dir . 'harikrutfiwu-admin.css', array(), '1.0.3', '' );
 	}
 
 	/**

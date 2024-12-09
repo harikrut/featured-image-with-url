@@ -87,7 +87,7 @@ if ( ! class_exists( 'HARIKRUTFIWU' ) ) :
 		 * @since 1.0.0
 		 */
 		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.2' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.3' );
 		}
 
 		/**
@@ -96,7 +96,7 @@ if ( ! class_exists( 'HARIKRUTFIWU' ) ) :
 		 * @since 1.0.0
 		 */
 		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.2' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'Cheatin&#8217; huh?', 'featured-image-with-url' ), '1.0.3' );
 		}
 
 		/**

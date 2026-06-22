@@ -3,7 +3,7 @@ Contributors: harikrut
 Tags: featured image, external featured image, image url, remote featured image, external image url
 Requires PHP: 7.4
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 WC tested up to: 10.4
 Stable tag: 1.0.4
 License: GPLv2 or later

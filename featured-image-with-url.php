@@ -3,7 +3,7 @@
  * Plugin Name:       Featured Image with URL
  * Plugin URI:        https://wordpress.org/plugins/featured-image-with-url/
  * Description:       This plugin allows to use an external URL Images as Featured Image for your post types. Includes support for Product Gallery (WooCommerce).
- * Version:           1.0.4
+ * Version:           1.0.5
  * Author:            Harikrut Technolab
  * Author URI:        https://www.harikrut.com/
  * License:           GPL-2.0+
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 // Plugin version.
 if ( ! defined( 'HARIKRUTFIWU_VERSION' ) ) {
-	define( 'HARIKRUTFIWU_VERSION', '1.0.4' );
+	define( 'HARIKRUTFIWU_VERSION', '1.0.5' );
 }
 
 // Plugin folder Path.

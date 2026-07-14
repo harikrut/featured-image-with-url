@@ -153,12 +153,12 @@ class HARIKRUTFIWU_Common {
 				$image_url = $this->harikrutfiwu_resize_image_on_the_fly( $image_url, $size );
 			}
 
-			$image_alt = ( $image_data['img_alt'] ) ? 'alt="' . $image_data['img_alt'] . '"' : '';
+			$image_alt = ( $image_data['img_alt'] ) ? 'alt="' . esc_attr( $image_data['img_alt'] ) . '"' : '';
 			$classes   = 'external-img wp-post-image ';
 			$classes  .= ( isset( $attr['class'] ) ) ? $attr['class'] : '';
-			$style     = ( isset( $attr['style'] ) ) ? 'style="' . $attr['style'] . '"' : '';
+			$style     = ( isset( $attr['style'] ) ) ? 'style="' . esc_attr( $attr['style'] ) . '"' : '';
 
-			$html = sprintf( '<img src="%s" %s class="%s" %s />', $image_url, $image_alt, $classes, $style );
+			$html = sprintf( '<img src="%s" %s class="%s" %s />', esc_url( $image_url ), $image_alt, esc_attr( $classes ), $style );
 		}
 		return $html;
 	}

@@ -60,6 +60,7 @@ if ( ! class_exists( 'HARIKRUTFIWU' ) ) :
 				self::$instance->includes();
 				self::$instance->admin  = new HARIKRUTFIWU_Admin();
 				self::$instance->common = new HARIKRUTFIWU_Common();
+				new HARIKRUTFIWU_REST();
 
 			}
 			return self::$instance;
@@ -106,6 +107,7 @@ if ( ! class_exists( 'HARIKRUTFIWU' ) ) :
 		private function includes() {
 			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-harikrutfiwu-admin.php';
 			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-harikrutfiwu-common.php';
+			require_once HARIKRUTFIWU_PLUGIN_DIR . 'includes/class-harikrutfiwu-rest.php';
 		}
 	}
 

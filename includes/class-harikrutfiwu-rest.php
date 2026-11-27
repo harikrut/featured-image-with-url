@@ -24,6 +24,8 @@ class HARIKRUTFIWU_REST {
 		add_action( 'rest_api_init', array( $this, 'register_fields' ), 5 );
 		add_filter( 'woocommerce_rest_prepare_product_object', array( $this, 'prepare_response' ), 10, 3 );
 		add_filter( 'woocommerce_rest_pre_insert_product_object', array( $this, 'prepare_product' ), 10, 2 );
+		add_filter( 'woocommerce_rest_prepare_product', array( $this, 'prepare_response' ), 10, 3 );
+		add_filter( 'woocommerce_rest_pre_insert_product', array( $this, 'prepare_legacy_product' ), 10, 2 );
 	}
 
 	/**
@@ -42,6 +44,7 @@ class HARIKRUTFIWU_REST {
 					'description' => __( 'External featured image URL. Use an empty string to clear it.', 'featured-image-with-url' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
+					'arg_options' => array( 'sanitize_callback' => array( $this, 'sanitize_field' ) ),
 				),
 			)
 		);
@@ -55,6 +58,7 @@ class HARIKRUTFIWU_REST {
 					'type'        => 'array',
 					'items'       => array( 'type' => 'string' ),
 					'context'     => array( 'view', 'edit' ),
+					'arg_options' => array( 'sanitize_callback' => array( $this, 'sanitize_field' ) ),
 				),
 			)
 		);
@@ -63,22 +67,23 @@ class HARIKRUTFIWU_REST {
 	/**
 	 * Read external URLs using the product ID even if _fields excludes id.
 	 *
-	 * @param WP_REST_Response $response Product response.
-	 * @param WC_Product       $product  Product being read.
-	 * @param WP_REST_Request  $request  Product request.
+	 * @param WP_REST_Response   $response Product response.
+	 * @param WC_Product|WP_Post $product  Product being read.
+	 * @param WP_REST_Request    $request  Product request.
 	 * @return WP_REST_Response
 	 */
 	public function prepare_response( $response, $product, $request ) {
-		$data   = $response->get_data();
-		$fields = wp_parse_list( $request->get_param( '_fields' ) );
+		$data       = $response->get_data();
+		$fields     = wp_parse_list( $request->get_param( '_fields' ) ?? '' );
+		$product_id = $product instanceof WP_Post ? $product->ID : $product->get_id();
 
 		if ( ! $fields || rest_is_field_included( self::FEATURED_FIELD, $fields ) ) {
-			$featured                    = $this->get_featured_meta( $product->get_id() );
+			$featured                     = $this->get_featured_meta( $product_id );
 			$data[ self::FEATURED_FIELD ] = esc_url_raw( $featured['img_url'] ?? '', array( 'http', 'https' ) );
 		}
 		if ( ! $fields || rest_is_field_included( self::GALLERY_FIELD, $fields ) ) {
 			$urls = array();
-			foreach ( $this->get_gallery_meta( $product->get_id() ) as $image ) {
+			foreach ( $this->get_gallery_meta( $product_id ) as $image ) {
 				$url = esc_url_raw( $image['url'], array( 'http', 'https' ) );
 				if ( '' !== $url ) {
 					$urls[] = $url;
@@ -103,26 +108,27 @@ class HARIKRUTFIWU_REST {
 			return $product;
 		}
 
-		$featured_url = $request->get_param( self::FEATURED_FIELD );
-		$gallery_urls = $request->get_param( self::GALLERY_FIELD );
-
-		if ( $request->has_param( self::FEATURED_FIELD ) && '' !== $featured_url ) {
-			$featured_url = $this->sanitize_url( $featured_url );
-			if ( '' === $featured_url ) {
-				return $this->invalid_field( self::FEATURED_FIELD );
+		// WooCommerce batch items can reach this hook without route argument sanitization.
+		$featured_url = null;
+		$gallery_urls = null;
+		if ( $request->has_param( self::FEATURED_FIELD ) ) {
+			$featured_url = $this->sanitize_field( $request->get_param( self::FEATURED_FIELD ), $request, self::FEATURED_FIELD );
+			if ( is_wp_error( $featured_url ) ) {
+				return $featured_url;
 			}
 		}
 		if ( $request->has_param( self::GALLERY_FIELD ) ) {
-			if ( ! is_array( $gallery_urls ) || array_values( $gallery_urls ) !== $gallery_urls ) {
-				return $this->invalid_field( self::GALLERY_FIELD );
-			}
-			foreach ( $gallery_urls as $index => $url ) {
-				$gallery_urls[ $index ] = $this->sanitize_url( $url );
-				if ( '' === $gallery_urls[ $index ] ) {
-					return $this->invalid_field( self::GALLERY_FIELD );
-				}
+			$gallery_urls = $this->sanitize_field( $request->get_param( self::GALLERY_FIELD ), $request, self::GALLERY_FIELD );
+			if ( is_wp_error( $gallery_urls ) ) {
+				return $gallery_urls;
 			}
 		}
+
+		// Leave dimensions unknown for new URLs so API requests need no remote image lookup.
+		$dimensions = array(
+			'width'  => 0,
+			'height' => 0,
+		);
 
 		if ( '' === $featured_url ) {
 			$product->delete_meta_data( '_harikrutfiwu_url' );
@@ -131,12 +137,12 @@ class HARIKRUTFIWU_REST {
 			$product->delete_meta_data( '_knawatfibu_alt' );
 		} elseif ( null !== $featured_url ) {
 			$old_image = $this->get_featured_meta( $product->get_id() );
+			$old_url   = $old_image['img_url'] ?? '';
 			$image     = array( 'img_url' => $featured_url );
-			if ( $featured_url === ( $old_image['img_url'] ?? '' ) ) {
+			if ( $old_url === $featured_url ) {
 				$image = $old_image;
 			}
-			// Leave dimensions unknown for new URLs so API requests need no remote image lookup.
-			$product->update_meta_data( '_harikrutfiwu_url', $image + array( 'width' => 0, 'height' => 0 ) );
+			$product->update_meta_data( '_harikrutfiwu_url', $image + $dimensions );
 		}
 
 		if ( array() === $gallery_urls ) {
@@ -147,11 +153,28 @@ class HARIKRUTFIWU_REST {
 			$gallery    = array();
 			foreach ( $gallery_urls as $url ) {
 				$image     = $old_images[ $url ] ?? array( 'url' => $url );
-				$gallery[] = $image + array( 'width' => 0, 'height' => 0 );
+				$gallery[] = $image + $dimensions;
 			}
 			$product->update_meta_data( HARIKRUTFIWU_WCGALLARY, $gallery );
 		}
 
+		return $product;
+	}
+
+	/**
+	 * Adapt validation errors for the v1 controller, which calls save() directly.
+	 *
+	 * @param WC_Product      $product Product being saved.
+	 * @param WP_REST_Request $request Product request.
+	 * @return WC_Product
+	 * @throws WC_REST_Exception If a submitted value is invalid.
+	 */
+	public function prepare_legacy_product( $product, $request ) {
+		$product = $this->prepare_product( $product, $request );
+		if ( is_wp_error( $product ) ) {
+			$error_data = $product->get_error_data();
+			throw new WC_REST_Exception( $product->get_error_code(), $product->get_error_message(), $error_data['status'] ?? 400 );
+		}
 		return $product;
 	}
 
@@ -197,6 +220,36 @@ class HARIKRUTFIWU_REST {
 				return isset( $image['url'] ) && is_string( $image['url'] ) && '' !== $image['url'];
 			}
 		);
+	}
+
+	/**
+	 * Sanitize an external image field before WordPress can coerce its value.
+	 *
+	 * @param mixed           $value   Submitted value.
+	 * @param WP_REST_Request $request Product request.
+	 * @param string          $field   Field name.
+	 * @return string|array|WP_Error
+	 */
+	public function sanitize_field( $value, $request, $field ) {
+		if ( self::FEATURED_FIELD === $field ) {
+			if ( '' === $value ) {
+				return '';
+			}
+			$url = $this->sanitize_url( $value );
+			return '' === $url ? $this->invalid_field( $field ) : $url;
+		}
+		if ( ! is_array( $value ) || array_values( $value ) !== $value ) {
+			return $this->invalid_field( $field );
+		}
+		$urls = array();
+		foreach ( $value as $entry ) {
+			$url = $this->sanitize_url( $entry );
+			if ( '' === $url ) {
+				return $this->invalid_field( $field );
+			}
+			$urls[] = $url;
+		}
+		return $urls;
 	}
 
 	/**
